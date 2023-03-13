@@ -1,3 +1,5 @@
+default:
+  tags: [ saas-linux-medium-amd64 ]
 # This definition builds the container for WebGoat and uses SAST and SAST
 # SAST might pass with a failure because of a missing Webwolf part but it can be ignored
 # which would make a great use case why allowing failures can make sense
