@@ -155,6 +155,7 @@ dast:
     - export DAST_AUTH_REPORT=true
     - export DAST_AUTH_VERIFICATION_URL="http://webgoat:8080/WebGoat/start.mvc#lesson/WebGoatIntroduction.lesson"
     - export DAST_ZAP_USE_AJAX_SPIDER=true
+    - export DAST_USE_AJAX_SPIDER=true
     #- export DAST_BROWSER_SCAN=true
     #- export DAST_BROWSER_ACTION_TIMEOUT="30s"
     #- DAST_BROWSER_NUMBER_OF_BROWSERS=3
