@@ -8,6 +8,9 @@
 # In this project the WebGoat container has been used as a service so we can avoid deployment
 # It is probably not the most efficient way but pretty good for this demo project.
 # There seems to be a silly bug that the variables part is not respected: ToDo
+
+#  story of DAST https://about.gitlab.com/blog/2022/10/19/browser-based-dast-feature-announcement/
+# https://about.gitlab.com/blog/2020/08/31/how-to-configure-dast-full-scans-for-complex-web-applications/
 default:
   tags: [ saas-linux-large-amd64 ] # targeting a more powerful runner
 
@@ -100,9 +103,9 @@ dast:
     DAST_AUTH_URL: http://webgoat:8080/WebGoat/login
     DAST_AUTH_VERIFICATION_URL: "http://webgoat:8080/WebGoat/start.mvc#lesson/WebGoatIntroduction.lesson"
     DAST_EXCLUDE_URLS: http://webgoat:8080/WebGoat/logout,http://webgoat:8080/WebGoat/login,http://webgoat:8080/WebGoat/login?logout
-    DAST_USERNAME: testtest
-    DAST_PASSWORD: password # use protected/masked variables, this is only for demonstration purposes
-    DAST_USERNAME_FIELD: username
+    DAST_USERNAME: testtest # created by curl command below
+    DAST_PASSWORD: password # use protected/masked variables, this is only for demonstration purposes, created by curl command below
+    DAST_USERNAME_FIELD: username 
     DAST_PASSWORD_FIELD: password
     DAST_AUTH_REPORT: "true"
     
@@ -124,7 +127,7 @@ dast:
     # DAST_BROWSER_FILE_LOG_PATH: "/zap/wrk/dast-scan.log"
 
   before_script:
-    # we need to add a user first in order for forms based auth
+    # we need to add a user first in order for forms based auth. http://127.0.0.1:8000/WebGoat/registration right-click inspect on fields
     - curl -vvv -X POST -d "username=testtest&password=password&matchingPassword=password&agree=agree&submit=Submit" "http://webgoat:8080/WebGoat/register.mvc"   
     - echo "In case of error you might want to set SECURE_LOG_LEVEL to a value of debug "
   artifacts:
