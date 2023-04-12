@@ -128,6 +128,7 @@ dast:
 
   before_script:
     # we need to add a user first in order for forms based auth. http://127.0.0.1:8000/WebGoat/registration right-click inspect on fields
+    # https://gitlab.com/mbrandner-group/web-goat-isaac/-/wikis/WebGoat
     - curl -vvv -X POST -d "username=testtest&password=password&matchingPassword=password&agree=agree&submit=Submit" "http://webgoat:8080/WebGoat/register.mvc"   
     - echo "In case of error you might want to set SECURE_LOG_LEVEL to a value of debug "
   artifacts:
