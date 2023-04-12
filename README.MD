@@ -1,4 +1,8 @@
-# The project
+# Latest info
+FewAndShort and ManyAndLong are the branches to look at.   
+This is not the latest WebGoat btw but good enough
+ 
+# The project 
 This project is about WebGoat and applying various security tools to it, i.e. SAST and DAST scanner.      
 The focus is on using DAST in different branches but the SAST scanners are running as well
 
