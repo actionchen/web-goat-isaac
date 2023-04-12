@@ -20,21 +20,19 @@ services:
   - name: docker:dind
     alias: dind
 
-
-
-  
-cache:
-  policy: pull
-  key: ${CI_COMMIT_SHA}
-  paths:
-  - .m2/
-
 variables:
   CI_DEBUG_TRACE: "true"
   SECURE_LOG_LEVEL: "debug" # pretty helpful when you get errors like exit 1
 
- 
+include:
+  - template: SAST.gitlab-ci.yml
+  - template: DAST.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Code-Quality.gitlab-ci.yml
+  - template: Security/License-Scanning.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
 
+ 
 build:
   stage: build
   image: maven:3-jdk-11-slim
@@ -71,42 +69,6 @@ build:
       - ./webgoat-lessons/cia/target/surefire-reports/TEST-*.xml
       - ./webgoat-lessons/sql-injection/target/surefire-reports/TEST-*.xml
       - ./webgoat-lessons/client-side-filtering/target/surefire-reports/TEST-*.xml
-
-
-include:
-  - template: SAST.gitlab-ci.yml
-  - template: DAST.gitlab-ci.yml
-  - template: Security/Secret-Detection.gitlab-ci.yml
-  - template: Code-Quality.gitlab-ci.yml
-  - template: Security/License-Scanning.gitlab-ci.yml
-  - template: Security/Dependency-Scanning.gitlab-ci.yml
-
-
-# editor complaint is okay
-sast:
-  stage: analyze
-  artifacts:
-    reports:
-      sast: gl-sast-report.json
-    paths:
-      - .m2/
-      - target/
-      - gl-sast-report.json
-
-spotbugs-sast:
-  dependencies:
-    - build
-  script:
-    - /analyzer run -compile=false
-  variables:
-    CI_DEBUG_TRACE: "true"
-    MAVEN_REPO_PATH: ${CI_PROJECT_DIR}/.m2/
-  artifacts:
-    reports:
-      sast: gl-sast-report.json
-    paths:
-      - gl-sast-report.json
-
 
 push:
   services:
