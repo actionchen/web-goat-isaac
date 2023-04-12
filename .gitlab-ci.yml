@@ -89,6 +89,7 @@ push:
 
 dast:
   needs: [push]
+  # timeout: 3 hours 30 minutes
   variables: # tweaking scanner
     # https://docs.gitlab.com/ee/user/application_security/dast/proxy-based.html#available-cicd-variables
     # https://docs.gitlab.com/ee/user/application_security/dast/browser_based.html#available-cicd-variables
