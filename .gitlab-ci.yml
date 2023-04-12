@@ -9,7 +9,7 @@
 # It is probably not the most efficient way but pretty good for this demo project.
 # There seems to be a silly bug that the variables part is not respected: ToDo
 default:
-  tags: [ saas-linux-large-amd64 ]
+  tags: [ saas-linux-large-amd64 ] # targeting a more powerful runner
 
 stages:
   - build
@@ -18,7 +18,7 @@ stages:
   - push
   - dast
 
-services:
+services: # we need a service for DAST, see below
   - name: docker:dind
     alias: dind
 
@@ -26,9 +26,11 @@ variables:
   CI_DEBUG_TRACE: "true"
   SECURE_LOG_LEVEL: "debug" # pretty helpful when you get errors like exit 1
 
-include:
+include: # security templates
   - template: SAST.gitlab-ci.yml
   - template: DAST.gitlab-ci.yml
+  # Command + K, then Command + U remove line comment
+  # Command + K, Command + C set line comment
   # - template: Security/Secret-Detection.gitlab-ci.yml
   # - template: Code-Quality.gitlab-ci.yml
   # - template: Security/License-Scanning.gitlab-ci.yml
@@ -41,11 +43,6 @@ build:
   script:
     - mvn clean install  # -DskipTests to shorten the build
     - mvn package -Dmaven.repo.local=./.m2 # -DskipTests
-  # cache:
-  #   policy: push
-  #   key: ${CI_COMMIT_SHA}
-  #   paths:
-  #     - .m2
   artifacts:
     paths:
       - "webgoat-server/Dockerfile"
@@ -91,7 +88,7 @@ push:
 # editor complains ?
 dast:
   needs: [push]
-  variables: 
+  variables: # tweaking scanner
     # https://docs.gitlab.com/ee/user/application_security/dast/proxy-based.html#available-cicd-variables
     # https://docs.gitlab.com/ee/user/application_security/dast/browser_based.html#available-cicd-variables
     DAST_WEBSITE: http://webgoat:8080/WebGoat/
@@ -106,13 +103,15 @@ dast:
     DAST_AUTH_REPORT: "true"
     
     DAST_FULL_SCAN_ENABLED: "true"
-    DAST_USE_AJAX_SPIDER: "true"
+    # DAST_USE_AJAX_SPIDER: "true"
    
     # Command + K, then Command + U remove line comment
     # Command + K, Command + C set line comment
-    #- export DAST_BROWSER_SCAN=true
-    #- export DAST_BROWSER_ACTION_TIMEOUT="30s"
-    #- DAST_BROWSER_NUMBER_OF_BROWSERS=3
+    DAST_BROWSER_SCAN: "true"
+    #DAST_BROWSER_ACTION_TIMEOUT: "30s"
+    DAST_BROWSER_NUMBER_OF_BROWSERS: 5 # providing more ressources if available
+    DAST_BROWSER_MAX_DEPTH: 20
+    DAST_BROWSER_PASSIVE_CHECK_WORKERS: 5 # providing more ressource if available
 
   before_script:
     # we need to add a user first in order for forms based auth
