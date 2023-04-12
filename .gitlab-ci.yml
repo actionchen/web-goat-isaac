@@ -91,9 +91,11 @@ push:
 # editor complains ?
 dast:
   needs: [push]
-  variables:
+  variables: 
+    # https://docs.gitlab.com/ee/user/application_security/dast/proxy-based.html#available-cicd-variables
+    # https://docs.gitlab.com/ee/user/application_security/dast/browser_based.html#available-cicd-variables
     DAST_WEBSITE: http://webgoat:8080/WebGoat/
-    
+    # https://docs.gitlab.com/ee/user/application_security/dast/authentication.html
     DAST_AUTH_URL: http://webgoat:8080/WebGoat/login
     DAST_AUTH_VERIFICATION_URL: "http://webgoat:8080/WebGoat/start.mvc#lesson/WebGoatIntroduction.lesson"
     DAST_EXCLUDE_URLS: http://webgoat:8080/WebGoat/logout,http://webgoat:8080/WebGoat/login,http://webgoat:8080/WebGoat/login?logout
@@ -105,8 +107,9 @@ dast:
     
     DAST_FULL_SCAN_ENABLED: "true"
     DAST_USE_AJAX_SPIDER: "true"
-    #DOCKER_DRIVER: overlay2
-
+   
+    # Command + K, then Command + U remove line comment
+    # Command + K, Command + C set line comment
     #- export DAST_BROWSER_SCAN=true
     #- export DAST_BROWSER_ACTION_TIMEOUT="30s"
     #- DAST_BROWSER_NUMBER_OF_BROWSERS=3
@@ -114,26 +117,11 @@ dast:
   before_script:
     # we need to add a user first in order for forms based auth
     - curl -vvv -X POST -d "username=testtest&password=password&matchingPassword=password&agree=agree&submit=Submit" "http://webgoat:8080/WebGoat/register.mvc"   
-   # repeating variables here: see ToDo above
-   # Command + K, then Command + U remove line comment
-   # Command + K, Command + C set line comment
-    # - export DAST_WEBSITE=http://webgoat:8080/WebGoat/ 
-    # - export DAST_AUTH_URL=http://webgoat:8080/WebGoat/login
-    # - export DAST_EXCLUDE_URLS=http://webgoat:8080/WebGoat/logout,http://webgoat:8080/WebGoat/login,http://webgoat:8080/WebGoat/login?logout
-    # - export DAST_FULL_SCAN_ENABLED=true
-    # - export DAST_USERNAME=testtest
-    # - export DAST_PASSWORD=password # use protected/masked variables, this is only for demonstration purposes
-    # - export DAST_USERNAME_FIELD=username
-    # - export DAST_PASSWORD_FIELD=password
-    # - export DAST_AUTH_REPORT=true
-    # - export DAST_AUTH_VERIFICATION_URL="http://webgoat:8080/WebGoat/start.mvc#lesson/WebGoatIntroduction.lesson"
-    # - export DAST_ZAP_USE_AJAX_SPIDER=true
-    # - export DAST_USE_AJAX_SPIDER=true
     - echo "In case of error you might want to set SECURE_LOG_LEVEL to a value of debug "
   artifacts:
     paths: [gl-dast-debug-auth-report.html]
     when: always
-  services:
+  services: # trick! not for production! https://docs.gitlab.com/ee/user/application_security/dast/#docker-services
   # WebGoat is only applied as a service here to avoid deployment for demo purposes  
   - name: $CI_REGISTRY_IMAGE:latest
     alias: webgoat
