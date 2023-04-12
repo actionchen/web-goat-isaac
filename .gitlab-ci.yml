@@ -86,13 +86,16 @@ push:
     - docker push $CI_REGISTRY_IMAGE:latest
 
 # editor complains ?
+
 dast:
   needs: [push]
   variables: # tweaking scanner
     # https://docs.gitlab.com/ee/user/application_security/dast/proxy-based.html#available-cicd-variables
     # https://docs.gitlab.com/ee/user/application_security/dast/browser_based.html#available-cicd-variables
     DAST_WEBSITE: http://webgoat:8080/WebGoat/
-    # https://docs.gitlab.com/ee/user/application_security/dast/authentication.html
+    # https://docs.gitlab.com/ee/user/application_security/dast/authentication.html # second demo JuiceShop for different 
+    # https://docs.gitlab.com/ee/user/application_security/dast/authentication.html#prerequisites
+    # https://docs.gitlab.com/ee/user/application_security/dast/authentication.html#known-limitations
     DAST_AUTH_URL: http://webgoat:8080/WebGoat/login
     DAST_AUTH_VERIFICATION_URL: "http://webgoat:8080/WebGoat/start.mvc#lesson/WebGoatIntroduction.lesson"
     DAST_EXCLUDE_URLS: http://webgoat:8080/WebGoat/logout,http://webgoat:8080/WebGoat/login,http://webgoat:8080/WebGoat/login?logout
@@ -102,23 +105,29 @@ dast:
     DAST_PASSWORD_FIELD: password
     DAST_AUTH_REPORT: "true"
     
+    # https://docs.gitlab.com/ee/user/application_security/dast/dast_troubleshooting.html proxy-based
+
     DAST_FULL_SCAN_ENABLED: "true"
     # DAST_USE_AJAX_SPIDER: "true"
    
     # Command + K, then Command + U remove line comment
     # Command + K, Command + C set line comment
-    DAST_BROWSER_SCAN: "true"
+    DAST_BROWSER_SCAN: "true" # https://docs.gitlab.com/ee/user/application_security/dast/browser_based_troubleshooting.html#any-reason-why-dast-would-not-work
     DAST_BROWSER_ACTION_TIMEOUT: "30s"
     DAST_BROWSER_NUMBER_OF_BROWSERS: 5 # providing more ressources if available
     DAST_BROWSER_MAX_DEPTH: 20
     DAST_BROWSER_PASSIVE_CHECK_WORKERS: 5 # providing more ressource if available
+    DAST_BROWSER_CRAWL_GRAPH: "true"
+    # DAST_BROWSER_LOG: "auth:debug"
+    # DAST_BROWSER_FILE_LOG: "loglevel:debug"
+    # DAST_BROWSER_FILE_LOG_PATH: "/zap/wrk/dast-scan.log"
 
   before_script:
     # we need to add a user first in order for forms based auth
     - curl -vvv -X POST -d "username=testtest&password=password&matchingPassword=password&agree=agree&submit=Submit" "http://webgoat:8080/WebGoat/register.mvc"   
     - echo "In case of error you might want to set SECURE_LOG_LEVEL to a value of debug "
   artifacts:
-    paths: [gl-dast-debug-auth-report.html]
+    paths: [gl-dast-debug-auth-report.html, gl-dast-crawl-graph.svg]  # , dast-scan.log] # DAST_AUTH_REPORT, DAST_BRWOSER_*_LOG
     when: always
   services: # trick! not for production! https://docs.gitlab.com/ee/user/application_security/dast/#docker-services
   # WebGoat is only applied as a service here to avoid deployment for demo purposes  
