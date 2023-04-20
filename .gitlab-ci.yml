@@ -92,7 +92,7 @@ push:
 
 dast:
   needs: [push]
-  # timeout: 3 hours 30 minutes
+  timeout: 5 hours 30 minutes
   variables: # tweaking scanner
     # https://docs.gitlab.com/ee/user/application_security/dast/proxy-based.html#available-cicd-variables
     # https://docs.gitlab.com/ee/user/application_security/dast/browser_based.html#available-cicd-variables
@@ -119,7 +119,7 @@ dast:
     DAST_BROWSER_SCAN: "true" # https://docs.gitlab.com/ee/user/application_security/dast/browser_based_troubleshooting.html#any-reason-why-dast-would-not-work
     DAST_BROWSER_ACTION_TIMEOUT: "30s"
     DAST_BROWSER_NUMBER_OF_BROWSERS: 3 # providing more ressources if available
-    DAST_BROWSER_MAX_DEPTH: 20
+    DAST_BROWSER_MAX_DEPTH: 10
     #DAST_BROWSER_PASSIVE_CHECK_WORKERS: 5 # providing more ressource if available
     DAST_BROWSER_CRAWL_GRAPH: "true"
     # DAST_BROWSER_LOG: "auth:debug"
